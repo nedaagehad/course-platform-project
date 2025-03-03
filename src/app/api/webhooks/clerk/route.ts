@@ -6,6 +6,7 @@ import { deleteUser, insertUser, updateUser } from "@/features/users/db/users";
 import { syncClerkUserMetadata } from "@/services/clerk";
 
 export async function POST(req: Request) {
+
   const SIGNING_SECRET = env.CLERK_WEBHOOK_SECRET;
 
   if (!SIGNING_SECRET) {
@@ -69,6 +70,7 @@ export async function POST(req: Request) {
             status: 400,
           });
         }
+
         if (evt.type === "user.created") {
           const user = await insertUser({
             clerkUserId: evt.data.id,
@@ -89,14 +91,14 @@ export async function POST(req: Request) {
             }
           );
         }
+        break;
       }
-      break;
 
     case "user.deleted":
       if (evt.data.id != null) {
         await deleteUser({ clerkUserId: evt.data.id });
+        break;
       }
-      break;
   }
 
   return new Response("OK", {
